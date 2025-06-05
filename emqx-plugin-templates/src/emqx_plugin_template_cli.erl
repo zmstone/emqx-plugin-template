@@ -5,6 +5,10 @@
 
 -export([cmd/1]).
 
+%% NOTE
+%% Functions from EMQX are unavailable at compile time.
+-dialyzer({no_unknown, [cmd/1]}).
+
 cmd(["get-config"]) ->
     Config = @@name@@:get_config(),
     emqx_ctl:print("~s~n", [emqx_utils_json:encode(Config)]);
