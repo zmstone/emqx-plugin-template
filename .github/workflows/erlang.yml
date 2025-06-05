@@ -7,8 +7,33 @@ on:
     branches: [ master ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Erlang
+      uses: erlef/setup-beam@v1
+      with:
+        version-file: emqx-plugin-templates/.tool-versions
+        version-type: strict
+    - name: Check template code formatting
+      run: make fmt-template-check
+    - name: Check formatting of the project code (tests, rebar.config, etc)
+      run: make fmt-check
+    - name: Install rebar3 template
+      run: make install-rebar-template
+    - name: Build test plugin
+      run: |
+        ./scripts/build-sample-plugin.sh \
+          --tag 1.0.0 \
+          --name my_emqx_plugin_avsc \
+          --with-avsc \
+          --output-dir /tmp \
+          --no-cleanup-build-dir
+    - name: Run dialyzer
+      run: make -C my_emqx_plugin_avsc dialyzer
 
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -19,10 +44,6 @@ jobs:
       with:
         version-file: emqx-plugin-templates/.tool-versions
         version-type: strict
-    - name: Check template code formatting
-      run: make fmt-template-check
-    - name: Check formatting of the project code (tests, rebar.config, etc)
-      run: make fmt-check
     - name: Install rebar3 template
       run: make install-rebar-template
     - name: Build test plugins

@@ -15,6 +15,10 @@
     on_health_check/1
 ]).
 
+%% NOTE
+%% Functions from EMQX are unavailable at compile time.
+-dialyzer({no_unknown, [start/2, stop/1]}).
+
 start(_StartType, _StartArgs) ->
     {ok, Sup} = @@name@@_sup:start_link(),
     @@name@@:hook(),

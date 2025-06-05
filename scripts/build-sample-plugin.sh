@@ -7,6 +7,7 @@ TAG=""
 NAME=""
 OUTPUT_DIR=""
 WITH_AVSC=false
+CLEANUP_BUILD_DIR=true
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -25,6 +26,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --with-avsc)
       WITH_AVSC=true
+      shift
+      ;;
+    --no-cleanup-build-dir)
+      CLEANUP_BUILD_DIR=false
       shift
       ;;
     *)
@@ -72,5 +77,11 @@ if [ -n "$OUTPUT_DIR" ]; then
   cp "$NAME"/_build/default/emqx_plugrel/*.tar.gz "$OUTPUT_DIR"
 fi
 
-echo "Cleaning up"
-rm -rf "$NAME"
+
+if [ "$CLEANUP_BUILD_DIR" = true ]; then
+  echo "Cleaning up"
+  rm -rf "$NAME"
+else
+  echo "Skipping cleanup"
+fi
+

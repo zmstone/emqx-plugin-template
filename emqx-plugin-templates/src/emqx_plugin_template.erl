@@ -42,6 +42,10 @@
     terminate/2
 ]).
 
+%% NOTE
+%% Functions from EMQX are unavailable at compile time.
+-dialyzer({no_unknown, [hook/0, unhook/0, on_client_authorize/4, on_message_puback/4]}).
+
 %% @doc
 %% Called when the plugin application start
 hook() ->

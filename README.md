@@ -239,7 +239,7 @@ When a plugin is built into a release, the package structure is as follows:
 
 ```
 └── my_emqx_plugin-1.1.0.tar.gz
-    ├── emqx_plugin_helper_vsn-5.9.0
+    ├── emqx_plugin_helper-5.9.1
     ├── my_emqx_plugin-0.1.0
     ├── README.md
     └── release.json
@@ -270,7 +270,7 @@ I.e. the tarball contains the compiled applications (listed in the `relx` sectio
     "metadata_vsn": "0.2.0",
     "rel_apps": [
         "my_emqx_plugin-0.1.0",
-        "emqx_plugin_helper-5.9.0"
+        "emqx_plugin_helper-5.9.1"
     ],
     "rel_vsn": "1.1.0",
     "with_config_schema": true
