@@ -102,6 +102,7 @@ The `rebar.config` file is used to build the plugin and pack it into a release.
 
 The most important sections are
 * dependencies (`deps`) section;
+* build plugins (`plugins`) section;
 * release section (`relx`);
 * plugin description (`emqx_plugin`) section.
 
@@ -118,6 +119,15 @@ In the `deps` section, you can add dependencies to other OTP applications that y
 The skeleton adds an extra dependency to the plugin: `emqx_plugin_helper`.
 It is usually needed for plugin code to make use of the record definitions and macros provided in the header files.
 See [`rebar3` dependency documentation](https://www.rebar3.org/docs/configuration/dependencies/) for more details.
+
+In the `plugins` section, you add rebar3 providers used for packaging.
+
+```erlang
+{plugins,
+    [
+        {emqx_plugrel, {git, "https://github.com/emqx/emqx_plugrel.git", {tag, "0.6.3"}}}
+    ]}.
+```
 
 In the `relx` section, you specify the release name and version, and the list of applications to be included in the release.
 
@@ -163,8 +173,8 @@ The `src` directory contains the code of the plugin's OTP application.
 `my_emqx_plugin.app.src` is a standard Erlang application description file which is compiled into `my_emqx_plugin.app` file in the release.
 
 Note the following:
-* The version of the application has nothing to do with the release version and may follow a different convention.
-The version of the plugin is specified in the `rebar.config` file.
+* The skeleton uses `{vsn, {file, "VERSION"}}` in `.app.src`.
+  A `compile` pre-hook writes this `VERSION` file from the `relx` release version in `rebar.config`.
 * Pay attention to the `applications` section. Since the plugin is an OTP application, plugin's start/stop/restart is
 the respective operation on the plugin's application. So, if the plugin's application depends on other applications,
 it should list them in the `applications` section.
@@ -625,6 +635,5 @@ So, to install a new version of the plugin,
 * The new version installed.
 
 The configuration is preserved between the installations.
-
 
 

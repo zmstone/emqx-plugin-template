@@ -19,6 +19,7 @@ test/ct.cover.spec
 .rebar3
 /.idea/
 rebar3.crashdump
+VERSION
 rebar3
 erlang_ls.config
 # VSCode files
