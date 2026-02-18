@@ -4,11 +4,11 @@
 
 This is a [rebar3 template](https://rebar3.org/docs/tutorials/templates/#custom-templates) to ease creation of [EMQX](https://github.com/emqx/emqx) v5 Plugins in [Erlang](https://www.erlang.org/).
 
-The documentation refers to the EMQX of the versions `~> 5.9`.
+Depending on for which EMQX version you are building the plugin, please follow the instructions respectively:
 
-For EMQX `~> 4.3`, please see branch `emqx-v4`.
-
-For older EMQX versions, plugin development is no longer maintained.
+- EMQX v4: Checkout branch `emqx-v4`.
+- EMQX v5: Checkout branch `emqx-v5`.
+- EMQX v6: Checkout branch `master`.
 
 A plugin template for Elixir (experimental) can be found at https://github.com/emqx/emqx-elixir-plugin.
 
