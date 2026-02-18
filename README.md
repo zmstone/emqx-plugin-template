@@ -12,6 +12,10 @@ For older EMQX versions, plugin development is no longer maintained.
 
 A plugin template for Elixir (experimental) can be found at https://github.com/emqx/emqx-elixir-plugin.
 
+> [!IMPORTANT]
+> Starting from EMQX v6, plugin development is encouraged in the EMQX monorepo.
+> See the guide in `PLUGIN.md`: https://github.com/emqx/emqx/blob/release-60/PLUGIN.md
+
 ## What is a Plugin?
 
 A plugin is an Erlang application that runs inside the EMQX nodes.
@@ -102,30 +106,30 @@ The `rebar.config` file is used to build the plugin and pack it into a release.
 
 The most important sections are
 * dependencies (`deps`) section;
-* build plugins (`plugins`) section;
+* rebar plugins (`plugins`) section;
 * release section (`relx`);
-* plugin description (`emqx_plugin`) section.
+* plugin metadata (`emqx_plugrel`) section.
 
 In the `deps` section, you can add dependencies to other OTP applications that your plugin depends on.
 
 ```erlang
 {deps,
     [
-        {emqx_plugin_helper, {git, "https://github.com/emqx/emqx-plugin-helper.git", {tag, "v5.9.0"}}}
-        %% more dependencies
+        %% add your dependencies here
     ]}.
 ```
 
-The skeleton adds an extra dependency to the plugin: `emqx_plugin_helper`.
-It is usually needed for plugin code to make use of the record definitions and macros provided in the header files.
-See [`rebar3` dependency documentation](https://www.rebar3.org/docs/configuration/dependencies/) for more details.
+> NOTE
+> A plugin release is a self-contained `.tar.gz` package that includes all apps listed in `relx`.
+> If a dependency app is already provided by EMQX, the copy from the plugin package is not loaded.
+> Avoid shipping incompatible dependency versions.
 
 In the `plugins` section, you add rebar3 providers used for packaging.
 
 ```erlang
 {plugins,
     [
-        {emqx_plugrel, {git, "https://github.com/emqx/emqx_plugrel.git", {tag, "0.6.3"}}}
+        {emqx_plugrel, {git, "https://github.com/emqx/emqx_plugrel.git", {tag, "0.6.4"}}}
     ]}.
 ```
 
@@ -134,7 +138,6 @@ In the `relx` section, you specify the release name and version, and the list of
 ```erlang
 {relx, [ {release, {my_emqx_plugin, "1.0.0"},
             [ my_emqx_plugin
-            , emqx_plugin_helper
             ]}
        ...
        ]}.
@@ -174,7 +177,7 @@ The `src` directory contains the code of the plugin's OTP application.
 
 Note the following:
 * The skeleton uses `{vsn, {file, "VERSION"}}` in `.app.src`.
-  A `compile` pre-hook writes this `VERSION` file from the `relx` release version in `rebar.config`.
+  A `compile` pre-hook writes `VERSION` from the `relx` release version in `rebar.config`.
 * Pay attention to the `applications` section. Since the plugin is an OTP application, plugin's start/stop/restart is
 the respective operation on the plugin's application. So, if the plugin's application depends on other applications,
 it should list them in the `applications` section.
@@ -249,7 +252,6 @@ When a plugin is built into a release, the package structure is as follows:
 
 ```
 └── my_emqx_plugin-1.1.0.tar.gz
-    ├── emqx_plugin_helper-5.9.1
     ├── my_emqx_plugin-0.1.0
     ├── README.md
     └── release.json
@@ -279,8 +281,7 @@ I.e. the tarball contains the compiled applications (listed in the `relx` sectio
     "git_commit_or_build_date": "2025-04-29",
     "metadata_vsn": "0.2.0",
     "rel_apps": [
-        "my_emqx_plugin-0.1.0",
-        "emqx_plugin_helper-5.9.1"
+        "my_emqx_plugin-0.1.0"
     ],
     "rel_vsn": "1.1.0",
     "with_config_schema": true
@@ -635,5 +636,3 @@ So, to install a new version of the plugin,
 * The new version installed.
 
 The configuration is preserved between the installations.
-
-
