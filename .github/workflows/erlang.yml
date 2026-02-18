@@ -25,6 +25,7 @@ jobs:
     - name: Build test plugin
       run: |
         git clone -b release-60 "https://github.com/emqx/emqx.git" /tmp/emqx
+        export ERL_LIBS=/tmp/emqx/apps
         ./scripts/build-sample-plugin.sh \
           --tag 1.0.0 \
           --name my_emqx_plugin_avsc \
@@ -52,7 +53,9 @@ jobs:
       run: |
         git clone -b release-60 "https://github.com/emqx/emqx.git" /tmp/emqx
     - name: Build test plugins
-      run: make build-test-plugins PLUGIN_BUILD_DIR=/tmp/emqx/plugins
+      run: |
+        export ERL_LIBS=/tmp/emqx/apps
+        make build-test-plugins PLUGIN_BUILD_DIR=/tmp/emqx/plugins
     - name: Start EMQX
       run: make up
     - name: Run tests
