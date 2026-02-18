@@ -6,13 +6,13 @@
 
 %% for #message{} record
 %% no need for this include if we call emqx_message:to_map/1 to convert it to a map
--include_lib("emqx_plugin_helper/include/emqx.hrl").
+-include("emqx.hrl").
 
 %% for hook priority constants
--include_lib("emqx_plugin_helper/include/emqx_hooks.hrl").
+-include("emqx_hooks.hrl").
 
 %% for logging
--include_lib("emqx_plugin_helper/include/logger.hrl").
+-include("logger.hrl").
 
 -export([
     hook/0,

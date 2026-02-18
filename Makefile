@@ -10,6 +10,7 @@ REBAR = $(CURDIR)/rebar3
 SCRIPTS = $(CURDIR)/scripts
 
 TEST_ASSETS_DIR = $(CURDIR)/_build/test/lib/emqx_pt/test/assets
+PLUGIN_BUILD_DIR ?=
 
 .PHONY: all
 all: compile
@@ -36,8 +37,8 @@ install-rebar-template:
 
 .PHONY: build-test-plugins
 build-test-plugins: $(REBAR)
-	$(SCRIPTS)/build-sample-plugin.sh --tag 1.0.0 --name my_emqx_plugin_avsc --with-avsc --output-dir $(TEST_ASSETS_DIR)
-	$(SCRIPTS)/build-sample-plugin.sh --tag 1.0.0 --name my_emqx_plugin --output-dir $(TEST_ASSETS_DIR)
+	$(SCRIPTS)/build-sample-plugin.sh --tag 1.0.0 --name my_emqx_plugin_avsc --with-avsc --output-dir $(TEST_ASSETS_DIR) $(if $(PLUGIN_BUILD_DIR),--build-dir $(PLUGIN_BUILD_DIR))
+	$(SCRIPTS)/build-sample-plugin.sh --tag 1.0.0 --name my_emqx_plugin --output-dir $(TEST_ASSETS_DIR) $(if $(PLUGIN_BUILD_DIR),--build-dir $(PLUGIN_BUILD_DIR))
 
 .PHONY: fmt
 fmt: $(REBAR)
@@ -62,4 +63,3 @@ up:
 .PHONY: down
 down:
 	docker compose -f .ci/docker-compose.yml down --volumes
-

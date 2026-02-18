@@ -6,6 +6,7 @@ set -euo pipefail
 TAG=""
 NAME=""
 OUTPUT_DIR=""
+BUILD_DIR=""
 WITH_AVSC=false
 CLEANUP_BUILD_DIR=true
 
@@ -22,6 +23,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --output-dir)
       OUTPUT_DIR="$2"
+      shift 2
+      ;;
+    --build-dir)
+      BUILD_DIR="$2"
       shift 2
       ;;
     --with-avsc)
@@ -50,6 +55,7 @@ if [ -z "$NAME" ]; then
 fi
 
 cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
+ROOT_DIR="$(pwd)"
 
 echo "Installing rebar template"
 
@@ -58,30 +64,37 @@ echo "Installing rebar template"
 echo "Creating plugin"
 
 rm -rf "$NAME"
-./rebar3 new emqx-plugin "$NAME" version="$TAG"
+"$ROOT_DIR/rebar3" new emqx-plugin "$NAME" version="$TAG"
 
-mv "$NAME/priv/config.hocon.example" "$NAME/priv/config.hocon"
+PLUGIN_DIR="$ROOT_DIR/$NAME"
+if [ -n "$BUILD_DIR" ]; then
+  mkdir -p "$BUILD_DIR"
+  rm -rf "$BUILD_DIR/$NAME"
+  mv "$NAME" "$BUILD_DIR/"
+  PLUGIN_DIR="$BUILD_DIR/$NAME"
+fi
+
+mv "$PLUGIN_DIR/priv/config.hocon.example" "$PLUGIN_DIR/priv/config.hocon"
 
 if [ "$WITH_AVSC" = true ]; then
-  mv "$NAME/priv/config_schema.avsc.enterprise.example" "$NAME/priv/config_schema.avsc"
-  mv "$NAME/priv/config_i18n.json.example" "$NAME/priv/config_i18n.json"
+  mv "$PLUGIN_DIR/priv/config_schema.avsc.enterprise.example" "$PLUGIN_DIR/priv/config_schema.avsc"
+  mv "$PLUGIN_DIR/priv/config_i18n.json.example" "$PLUGIN_DIR/priv/config_i18n.json"
 fi
 
 echo "Building plugin"
 export BUILD_WITHOUT_QUIC=1
-make -C "$NAME" rel
+make -C "$PLUGIN_DIR" rel
 
 echo "Copying plugin to $OUTPUT_DIR"
 if [ -n "$OUTPUT_DIR" ]; then
   mkdir -p "$OUTPUT_DIR"
-  cp "$NAME"/_build/default/emqx_plugrel/*.tar.gz "$OUTPUT_DIR"
+  cp "$PLUGIN_DIR"/_build/default/emqx_plugrel/*.tar.gz "$OUTPUT_DIR"
 fi
 
 
 if [ "$CLEANUP_BUILD_DIR" = true ]; then
   echo "Cleaning up"
-  rm -rf "$NAME"
+  rm -rf "$PLUGIN_DIR"
 else
   echo "Skipping cleanup"
 fi
-
